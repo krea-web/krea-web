@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useStaimport React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Testimonials } from './components/Testimonials';
@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [displayPage, setDisplayPage] = useState<Page>('home');
   
-  // Lingua bloccata su Italiano
+  // Lingua fissa e bloccata
   const lang: Language = 'it';
   
   const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +43,6 @@ const App: React.FC = () => {
     'READY_FOR_TRANSMISSION'
   ];
 
-  // 1. Timer del progresso puro
   useEffect(() => {
     if (!isLoading) return;
 
@@ -58,7 +57,6 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  // 2. Aggiornamento messaggi basato sul progresso (Side Effect separato)
   useEffect(() => {
     const logIdx = Math.min(
       Math.floor((loadingProgress / 100) * statusLogs.length),
@@ -174,7 +172,6 @@ const App: React.FC = () => {
         <Navbar 
           activeSection={currentPage} 
           lang={lang} 
-          setLang={setLang} 
           setCurrentPage={handlePageChange}
         />
         
