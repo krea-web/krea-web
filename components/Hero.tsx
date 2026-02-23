@@ -9,12 +9,35 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ lang, onNavigate }) => {
+  const heroRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [isActivating, setIsActivating] = useState(false);
   const [showRipple, setShowRipple] = useState(false);
+  const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
+    const element = heroRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isInView) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
@@ -27,7 +50,7 @@ export const Hero: React.FC<HeroProps> = ({ lang, onNavigate }) => {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [isActivating]);
+  }, [isActivating, isInView]);
 
   const handleCubeInteraction = () => {
     if (isActivating) return;
@@ -59,29 +82,29 @@ export const Hero: React.FC<HeroProps> = ({ lang, onNavigate }) => {
   }[lang];
 
   return (
-    <div className="pt-24 tablet:pt-32 laptop:pt-48 pb-16 tablet:pb-24 flex flex-col items-center justify-center relative px-4 xs:px-6 overflow-hidden min-h-screen bg-black">
+    <div ref={heroRef} className="pt-24 tablet:pt-32 laptop:pt-48 pb-16 tablet:pb-24 flex flex-col items-center justify-center relative px-4 xs:px-6 overflow-hidden min-h-screen bg-black">
       
       {showRipple && (
         <div className="absolute top-[25%] tablet:top-[30%] laptop:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] h-[100px] bg-blue-500/40 rounded-full animate-ripple pointer-events-none z-20"></div>
       )}
 
       <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
-          <div className="absolute top-[20%] left-10 w-24 h-24 border border-white/5 rounded-full flex items-center justify-center animate-spin-slow">
+          <div className={`absolute top-[20%] left-10 w-24 h-24 border border-white/5 rounded-full flex items-center justify-center ${isInView ? 'animate-spin-slow' : ''}`}>
               <Target size={14} className="text-blue-500 opacity-40" />
           </div>
-          <div className="absolute bottom-[20%] right-10 w-32 h-32 border border-white/5 rounded-full flex items-center justify-center animate-spin-slow-reverse">
+          <div className={`absolute bottom-[20%] right-10 w-32 h-32 border border-white/5 rounded-full flex items-center justify-center ${isInView ? 'animate-spin-slow-reverse' : ''}`}>
               <Crosshair size={16} className="text-blue-500 opacity-40" />
           </div>
       </div>
 
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl h-[600px] md:h-[900px] bg-blue-600/[0.08] blur-[150px] md:blur-[220px] rounded-full -z-10 animate-pulse"></div>
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl h-[600px] md:h-[900px] bg-blue-600/[0.08] blur-[150px] md:blur-[220px] rounded-full -z-10 ${isInView ? 'animate-pulse' : ''}`}></div>
       
       <div className="relative mb-6 tablet:mb-10 laptop:mb-20 h-28 tablet:h-40 laptop:h-52 flex items-center justify-center z-50">
         <div 
           className={`scene cursor-pointer transition-all duration-1000 ${isActivating ? 'scale-110' : 'scale-[0.55] tablet:scale-[0.75] laptop:scale-[0.85]'} magnetic-target group`} 
           onClick={handleCubeInteraction}
         >
-          <div className={`cube ${isActivating ? 'animate-sync' : 'animate-spin-infinite'}`}>
+          <div className={`cube ${isActivating ? 'animate-sync' : isInView ? 'animate-spin-infinite' : ''}`}>
             <div className="cube-core">
                 <div className="core-glow animate-pulse"></div>
                 <div className="core-rings animate-spin-slow"></div>

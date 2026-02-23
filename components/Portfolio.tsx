@@ -12,6 +12,7 @@ const EstateDemo: React.FC<{ lang: Language }> = ({ lang }) => (
         src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=80" 
         width="1600"
         height="1200"
+        loading="lazy"
         className="absolute inset-0 w-full h-full object-cover opacity-80 animate-[ken-burns_20s_ease_infinite]" 
         alt="Luxury Villa" 
       />
@@ -42,6 +43,7 @@ const StyleDemo: React.FC<{ lang: Language }> = ({ lang }) => (
        <div className="lg:col-span-7 relative overflow-hidden group min-h-[350px] md:min-h-screen lg:min-h-0">
           <img 
             src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&q=80" 
+            loading="lazy"
             className="w-full h-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-[3s]" 
             alt="Elite Hair" 
           />
@@ -65,6 +67,8 @@ export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
   const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const tabletRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
 
   const projects = [
     { 
@@ -86,12 +90,31 @@ export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
   ];
 
   useEffect(() => {
-    if (selectedDemo) return;
+    const element = containerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (selectedDemo || !isInView) return;
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % projects.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, [projects.length, selectedDemo]);
+  }, [projects.length, selectedDemo, isInView]);
 
   const openDemo = (id: string) => {
     setIsDemoLoading(true);
@@ -119,7 +142,7 @@ export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
   }[lang];
 
   return (
-    <div className="py-24 md:py-32 px-6 max-w-7xl mx-auto relative overflow-visible">
+    <div ref={containerRef} className="py-24 md:py-32 px-6 max-w-7xl mx-auto relative overflow-visible">
       <div className="grid lg:grid-cols-2 gap-16 md:gap-20 items-center">
         
         {/* Colonna 1: Anteprima Tablet */}
@@ -131,7 +154,13 @@ export const Portfolio: React.FC<PortfolioProps> = ({ lang }) => {
                 <div className="bg-black rounded-[2.8rem] h-[500px] w-full overflow-hidden relative">
                     <div className="absolute inset-0 transition-transform duration-1000 flex" style={{ transform: `translateX(-${activeIndex * 100}%)`, width: `${projects.length * 100}%` }}>
                         {projects.map((project, i) => (
-                            <img key={i} src={project.img} className="w-full h-full object-cover flex-shrink-0" alt={project.name} />
+                            <img
+                              key={i}
+                              src={project.img}
+                              loading="lazy"
+                              className="w-full h-full object-cover flex-shrink-0"
+                              alt={project.name}
+                            />
                         ))}
                     </div>
                     <div className="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-black via-transparent to-transparent">

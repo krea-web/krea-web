@@ -2,6 +2,7 @@
 import React, { useRef, useState } from 'react';
 import { Check, Zap, Globe, Crown, ArrowRight, Star } from 'lucide-react';
 import { Language } from '../types';
+import { getPricingPlans, type PricingPlanView } from '../src/data/pricingData';
 
 interface PricingProps {
   lang: Language;
@@ -43,42 +44,7 @@ export const Pricing: React.FC<PricingProps> = ({ lang, onNavigate }) => {
     }
   }[lang];
 
-  const plans = [
-    { 
-      id: 'CORE', 
-      name: 'KREA CORE', 
-      price: '599', 
-      icon: <Zap size={20} />, 
-      tag: 'ESSENTIAL POWER', 
-      specs: { throughput: '1.2 GB/s', latency: '0.4s', security: 'Standard' },
-      features: ['UI/UX d\'Eccellenza', 'SEO Fondamentale', 'Cloud Hosting Global', 'Performance Ready'], 
-      cta: lang === 'it' ? 'ATTIVA CORE' : 'ACTIVATE CORE', 
-      desc: 'La base d\'acciaio per brand che necessitano di velocità e impatto immediato.' 
-    },
-    { 
-      id: 'DOMINION', 
-      name: 'KREA DOMINION', 
-      price: '1499', 
-      icon: <Globe size={20} />, 
-      tag: 'STRATEGIC SCALE', 
-      featured: true, 
-      specs: { throughput: '4.8 GB/s', latency: '0.1s', security: 'Fortified' },
-      features: ['Multilingua Global', 'SEO Internazionale', 'Conversion Engine', 'Supporto Prioritario'], 
-      cta: lang === 'it' ? 'SCALA IL MERCATO' : 'SCALE THE MARKET', 
-      desc: 'Il gold standard per l\'espansione globale e la conversione massiva.' 
-    },
-    { 
-      id: 'PRESTIGE', 
-      name: 'KREA PRESTIGE', 
-      price: '2199', 
-      icon: <Crown size={20} />, 
-      tag: 'ELITE EXPERIENCE', 
-      specs: { throughput: 'UNLIMITED', latency: 'ULTRA', security: 'Quantum' },
-      features: ['Design Cinematico 3D', 'Moduli AI Custom', 'Scalabilità Infinita', 'Exclusive Brand Assets'], 
-      cta: lang === 'it' ? 'SBLOCCA PRESTIGIO' : 'UNLOCK PRESTIGE', 
-      desc: 'L\'apice dell\'ingegneria digitale per chi non accetta limiti alla visione.' 
-    }
-  ];
+  const plans = getPricingPlans(lang);
 
   return (
     <div className="py-16 md:py-32 laptop:py-48 relative overflow-hidden px-4 xs:px-6 bg-[#030303]" id="pricing">
@@ -124,7 +90,7 @@ export const Pricing: React.FC<PricingProps> = ({ lang, onNavigate }) => {
   );
 };
 
-const PricingCard: React.FC<{ plan: any; t: any; onCtaClick: () => void }> = ({ plan, t, onCtaClick }) => {
+const PricingCard: React.FC<{ plan: PricingPlanView; t: any; onCtaClick: () => void }> = ({ plan, t, onCtaClick }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
@@ -176,7 +142,9 @@ const PricingCard: React.FC<{ plan: any; t: any; onCtaClick: () => void }> = ({ 
         <div className="mb-8 relative z-20" style={{ transform: 'translateZ(30px)' }}>
             <div className="flex justify-between items-start mb-6">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-700 ${plan.featured ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)]' : 'bg-white/5 text-blue-500 border border-white/10'}`}>
-                    {plan.icon}
+                    {plan.icon === 'zap' && <Zap size={20} />}
+                    {plan.icon === 'globe' && <Globe size={20} />}
+                    {plan.icon === 'crown' && <Crown size={20} />}
                 </div>
                 <div className="text-right">
                     <span className="text-[8px] font-black text-blue-500 tracking-[0.3em] uppercase block mb-0.5">{plan.tag}</span>
@@ -228,7 +196,7 @@ const PricingCard: React.FC<{ plan: any; t: any; onCtaClick: () => void }> = ({ 
             onClick={onCtaClick} 
             className={`w-full py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2.5 transition-all duration-500 overflow-hidden relative group/btn ${plan.featured ? 'bg-white text-black hover:bg-blue-600 hover:text-white' : 'bg-transparent text-white border border-white/10 hover:border-blue-500/50 hover:bg-white/5'}`}
           >
-              <span className="relative z-10">{plan.cta}</span>
+              <span className="relative z-10">{plan.ctaLabel}</span>
               <ArrowRight size={12} className="relative z-10 group-hover/btn:translate-x-1.5 transition-transform duration-500" />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_2s_infinite] pointer-events-none"></div>
           </button>

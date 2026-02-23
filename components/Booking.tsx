@@ -170,20 +170,21 @@ export const Booking: React.FC<BookingProps> = ({ lang }) => {
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (isSubmitting) return;
     if (!formData.name || !formData.email || !selectedFullDate || !selectedTime) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
 
-    // --- INIZIO MODIFICA KREA N8N ---
-    // URL del tuo Tunnel Ngrok + Path del Webhook di Test
     const webhookUrl = 'https://trackless-concerningly-alta.ngrok-free.dev/webhook-test/booking-uplink';
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 15000);
 
     try {
       const payload = {
         name: formData.name,
         email: formData.email,
-        date: selectedFullDate.toISOString().split('T')[0], 
+        date: selectedFullDate.toISOString().split('T')[0],
         time: selectedTime
       };
 
@@ -191,23 +192,32 @@ export const Booking: React.FC<BookingProps> = ({ lang }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true' // Bypass ngrok free-tier interstitial page
+          'ngrok-skip-browser-warning': 'true'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         setIsConfirmed(true);
       } else {
-        throw new Error("Errore di comunicazione con il server KREA");
+        setSubmitError(t.error);
       }
     } catch (error: any) {
-      console.error("KREA Uplink Error:", error);
-      setSubmitError(t.error);
+      console.error('KREA Uplink Error:', error);
+      if (error?.name === 'AbortError') {
+        setSubmitError(
+          lang === 'it'
+            ? 'Timeout: nessuna risposta da n8n. Riprova tra pochi istanti.'
+            : 'Timeout: no response from n8n. Please try again shortly.'
+        );
+      } else {
+        setSubmitError(t.error);
+      }
     } finally {
+      window.clearTimeout(timeoutId);
       setIsSubmitting(false);
     }
-    // --- FINE MODIFICA KREA N8N ---
   };
 
   const isSelected = (date: Date | null) => {
@@ -223,6 +233,7 @@ export const Booking: React.FC<BookingProps> = ({ lang }) => {
   };
 
   const isFormValid = formData.name.trim().length > 1 && formData.email.includes('@');
+  const submitLabel = lang === 'it' ? 'UPLINK IN CORSO...' : 'UPLINK IN PROGRESS...';
 
   const TimeButton: React.FC<{ time: string }> = ({ time }) => {
     const isBooked = bookedSlots.includes(time);
@@ -392,13 +403,6 @@ export const Booking: React.FC<BookingProps> = ({ lang }) => {
                               </div>
                            </div>
 
-                           {submitError && (
-                             <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs animate-shake mb-4">
-                               <AlertCircle size={18} className="shrink-0" />
-                               <span className="font-medium">{submitError}</span>
-                             </div>
-                           )}
-                           
                            {isLoadingSlots ? (
                              <div className="py-20 flex flex-col items-center justify-center opacity-70">
                                <Loader2 className="animate-spin text-blue-500 mb-4" size={32} />
@@ -452,13 +456,6 @@ export const Booking: React.FC<BookingProps> = ({ lang }) => {
                              <Target className="text-blue-500 animate-pulse" size={20} />
                           </div>
 
-                          {submitError && (
-                             <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs animate-shake mb-4">
-                               <AlertCircle size={18} className="shrink-0" />
-                               <span className="font-medium">{submitError}</span>
-                             </div>
-                          )}
-
                           <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="relative group/input">
                               <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within/input:text-blue-500 transition-colors" size={18} />
@@ -505,13 +502,14 @@ export const Booking: React.FC<BookingProps> = ({ lang }) => {
                     <button 
                       onClick={step < 3 ? nextStep : (e) => handleSubmit(e)}
                       disabled={
+                        isSubmitting ||
                         (step === 1 && selectedFullDate === null) || 
                         (step === 2 && (selectedTime === null || isLoadingSlots)) || 
                         (step === 3 && !isFormValid)
                       }
                       className="bg-blue-600 hover:bg-white hover:text-black py-4 px-10 rounded-full text-white text-[10px] font-black tracking-[0.2em] uppercase shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] disabled:opacity-20 disabled:shadow-none flex items-center justify-center gap-3 transition-all group duration-500"
                     >
-                      {step === 3 ? t.ctaFinal : t.ctaNext}
+                      {step === 3 ? (isSubmitting ? submitLabel : t.ctaFinal) : t.ctaNext}
                       {step < 3 ? <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" /> : <Zap size={14} className="group-hover:fill-black" />}
                     </button>
                   </div>
@@ -520,6 +518,17 @@ export const Booking: React.FC<BookingProps> = ({ lang }) => {
           </div>
         </div>
       </div>
+      {submitError && (
+        <div className="fixed bottom-6 right-6 z-[2000]">
+          <div className="glass px-6 py-4 rounded-2xl border border-red-500/40 bg-black/80 shadow-[0_0_40px_rgba(248,113,113,0.35)] flex items-center gap-3">
+            <AlertCircle size={18} className="text-red-400 shrink-0" />
+            <div className="flex flex-col">
+              <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-red-400">UPLINK_ERROR</span>
+              <span className="text-xs text-red-100">{submitError}</span>
+            </div>
+          </div>
+        </div>
+      )}
       <style>{`
         @keyframes scan {
           0% { transform: translateX(-100%); opacity: 0; }

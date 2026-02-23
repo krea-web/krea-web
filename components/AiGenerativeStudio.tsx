@@ -89,7 +89,7 @@ export const AiGenerativeStudio: React.FC<AiGenerativeStudioProps> = ({ lang }) 
     setResultUrl(null);
     setStatusMessage(t.generating);
     try {
-      const apiKey = (process.env.API_KEY || '') as string;
+      const apiKey = import.meta.env.VITE_API_KEY as string;
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: 'gemini-3-pro-image-preview',
@@ -128,7 +128,7 @@ export const AiGenerativeStudio: React.FC<AiGenerativeStudioProps> = ({ lang }) 
     }, 12000);
 
     try {
-      const apiKey = (process.env.API_KEY || '') as string;
+      const apiKey = import.meta.env.VITE_API_KEY as string;
       const ai = new GoogleGenAI({ apiKey });
       let operation = await ai.models.generateVideos({
         model: 'veo-3.1-fast-generate-preview',

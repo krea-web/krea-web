@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface ProjectHypothesis {
   url: string;
@@ -28,8 +27,30 @@ const row2: ProjectHypothesis[] = [
 ];
 
 export const DoubleMediaMarquee: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="py-20 md:py-32 relative overflow-hidden bg-black select-none">
+    <div ref={containerRef} className="py-20 md:py-32 relative overflow-hidden bg-black select-none">
       {/* Top Gradient for smooth integration with previous section */}
       <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-black via-black/90 to-transparent z-10 pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-black via-black/90 to-transparent z-10 pointer-events-none"></div>
@@ -56,7 +77,7 @@ export const DoubleMediaMarquee: React.FC = () => {
       <div className="space-y-8 md:space-y-12 relative z-0">
         {/* Row 1: Images scrolling RIGHT */}
         <div className="flex overflow-hidden whitespace-nowrap group py-4">
-          <div className="flex animate-scroll-right gap-6 md:gap-10 px-4 md:px-6">
+          <div className={`flex ${isInView ? 'animate-scroll-right' : ''} gap-6 md:gap-10 px-4 md:px-6`}>
             {[...row1, ...row1, ...row1].map((item, i) => (
               <ProjectCard key={i} item={item} />
             ))}
@@ -65,7 +86,7 @@ export const DoubleMediaMarquee: React.FC = () => {
 
         {/* Row 2: Images scrolling LEFT */}
         <div className="flex overflow-hidden whitespace-nowrap group py-4">
-          <div className="flex animate-scroll-left gap-6 md:gap-10 px-4 md:px-6">
+          <div className={`flex ${isInView ? 'animate-scroll-left' : ''} gap-6 md:gap-10 px-4 md:px-6`}>
             {[...row2, ...row2, ...row2].map((item, i) => (
               <ProjectCard key={i} item={item} />
             ))}
