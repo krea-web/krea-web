@@ -6,11 +6,11 @@ import { Language, Page } from '../types';
 interface NavbarProps {
   activeSection: string;
   lang: Language;
-  setLang: (lang: Language) => void;
   setCurrentPage: (page: Page, targetId?: string) => void;
+  setLang?: (lang: Language) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeSection, lang, setLang, setCurrentPage }) => {
+  export const Navbar: React.FC<NavbarProps> = ({ activeSection, lang, setCurrentPage }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -91,10 +91,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, lang, setLang, se
             </div>
 
             <div className="flex items-center gap-1.5 xs:gap-2 md:gap-5" style={{ transform: 'translateZ(40px)' }}>
-              <button onClick={() => setLang(lang === 'it' ? 'en' : 'it')} className="flex items-center gap-1 glass px-2 md:px-3.5 py-1.5 rounded-full border-white/10 hover:border-blue-500/30 transition-all text-[7px] md:text-[9px] font-black group/lang magnetic-target bg-white/5">
-                <Globe size={10} className="text-blue-500 group-hover:rotate-12 transition-transform duration-500 md:w-3" />
-                <span className="tracking-widest">{lang.toUpperCase()}</span>
-              </button>
 
               <button onClick={() => navigateTo('home', 'booking')} className="flex items-center gap-1.5 bg-blue-600 text-white px-3 xs:px-4 md:px-7 py-1.5 xs:py-2 md:py-3 rounded-full text-[7.5px] md:text-[9.5px] font-black tracking-widest hover:bg-white hover:text-black transition-all shadow-lg magnetic-target group/btn">
                 <span className="hidden xs:inline">{lang === 'it' ? 'PRENOTA' : 'BOOK'}</span>
@@ -130,7 +126,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, lang, setLang, se
             <div className="mt-auto space-y-4">
                 <div className="flex items-center gap-3">
                     <a href="https://www.instagram.com/krea.webb/" target="_blank" className="p-4 glass rounded-2xl text-blue-500 bg-white/5"><Instagram size={20} /></a>
-                    <button onClick={() => { setLang(lang === 'it' ? 'en' : 'it'); setIsMobileMenuOpen(false); }} className="flex-1 glass py-4 rounded-2xl font-black tracking-widest text-[9px] border-blue-500/20 bg-white/5">{lang === 'it' ? 'ENGLISH VERSION' : 'VERSIONE ITALIANA'}</button>
                 </div>
                 <button onClick={() => navigateTo('home', 'booking')} className="w-full bg-blue-600 py-5 rounded-2xl font-black tracking-[0.25em] text-[10px] uppercase shadow-xl shadow-blue-600/20 active:scale-95 transition-transform">
                   {lang === 'it' ? 'AVVIA TRASMISSIONE' : 'START TRANSMISSION'}

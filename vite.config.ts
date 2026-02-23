@@ -7,10 +7,6 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
 
   return {
-    plugins: [react()],
-    define: {
-      // Iniezione statica della chiave API fornita per sbloccare la generazione immagini
-      'process.env.API_KEY': JSON.stringify("AIzaSyBUvZC8NuYwzyHLZABxdUzbk3kTqCL41Mg")
-    }
+    plugins: [react()]
   };
 });

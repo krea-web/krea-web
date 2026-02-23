@@ -59,7 +59,7 @@ export const AiEngine: React.FC<AiEngineProps> = ({ lang }) => {
     if (!prompt || isGenerating) return;
     
     // Check for API Key presence
-    if (!process.env.API_KEY) {
+    if (!import.meta.env.VITE_API_KEY) {
       setError(t.keyMissing);
       return;
     }
@@ -70,7 +70,7 @@ export const AiEngine: React.FC<AiEngineProps> = ({ lang }) => {
     
     try {
       // Correct initialization using the provided global API Key
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
       
       // STEP 1: Desktop Generation
       setCurrentTask(t.genDesktop);
