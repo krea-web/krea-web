@@ -1,24 +1,449 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ARCH STUDIO - Minimal Architecture &amp; Design</title>
-    <meta name="description" content="Award-winning architectural firm specializing in minimal design. Creating extraordinary spaces through thoughtful architecture, residential, commercial and renovation projects.">
-    <meta name="author" content="ARCH STUDIO" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KREA | Global Digital Architecture & Advanced Hub</title>
+    
+    <!-- SEO & OpenGraph -->
+    <meta name="description" content="Elite digital agency specializing in global digital architectures, strategic design, and high-performance intelligent ecosystems.">
+    <meta property="og:title" content="KREA | Global Digital Architecture">
+    <meta property="og:description" content="Architecting the digital future from Sardinia to the world.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#050b1f">
 
-    <meta property="og:title" content="ARCH STUDIO - Minimal Architecture & Design" />
-    <meta property="og:description" content="Award-winning architectural firm specializing in minimal design. Creating extraordinary spaces through thoughtful architecture." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/8jp6KAG7qJZgRp4lIs04ZYXqlhL2/social-images/social-1758046678671-Screenshot 2025-09-16 at 20.17.45.png">
+    <!-- Preload Critical Images -->
+    <link rel="preload" as="image" href="https://i.postimg.cc/xdt8pxDd/KREA-VISION-1-jpg.png">
+    <link rel="preload" as="image" href="https://i.postimg.cc/RVd0ZphQ/HERO-16.png">
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/8jp6KAG7qJZgRp4lIs04ZYXqlhL2/social-images/social-1758046678671-Screenshot 2025-09-16 at 20.17.45.png">
-  </head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            screens: {
+              'xs': '375px',
+              'tablet': '768px',
+              'laptop': '1024px',
+              'desktop': '1280px',
+            },
+            fontFamily: {
+              sans: ['Outfit', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+              heading: ['Syne', 'sans-serif'],
+            },
+            colors: {
+              'krea-bg': '#020617',
+              'krea-blue': '#3b82f6',
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #3b82f6;
+            --neon-glow: rgba(59, 130, 246, 0.5);
+            --cursor-size: 10px;
+            --app-bg: #030712;
+            --grid-color: rgba(59, 130, 246, 0.15);
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #000000;
+            color: #fff;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            margin: 0;
+        }
 
-  <body>
+        .perspective-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: center top;
+            transform: perspective(1000px) rotateX(20deg) scale(1.5);
+            transform-origin: top center;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: -45;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 80%, transparent 100%);
+        }
+        
+        .perspective-grid::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 2px, transparent 2px);
+            background-size: 240px 240px;
+            background-position: center center;
+            mix-blend-mode: overlay;
+        }
+
+        .global-vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.95) 100%);
+            pointer-events: none;
+            z-index: -40;
+        }
+
+        #cursor-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+            display: none;
+        }
+
+        .cursor-dot {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s, opacity 0.3s;
+            will-change: transform;
+        }
+
+        .cursor-dot.main {
+            z-index: 10002;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot.trail {
+            background: var(--neon-blue);
+            z-index: 10001;
+            opacity: 0.5;
+        }
+
+        .cursor-dot.hover-state {
+            width: 80px;
+            height: 80px;
+            background: var(--neon-blue);
+            opacity: 0.15;
+            mix-blend-mode: normal;
+            border: 1px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .cursor-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .cursor-ring.active {
+            opacity: 1;
+            width: 100px;
+            height: 100px;
+            border-color: var(--neon-blue);
+        }
+
+        .grain::after {
+            content: "";
+            position: fixed;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background-image: url("https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Noise_Texture.png");
+            background-repeat: repeat;
+            opacity: 0.07;
+            pointer-events: none;
+            z-index: 9999;
+            animation: grain 8s steps(10) infinite;
+            mix-blend-mode: overlay;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-2%, -4%); }
+            20% { transform: translate(-5%, 2%); }
+            30% { transform: translate(3%, -8%); }
+            40% { transform: translate(-2%, 8%); }
+            50% { transform: translate(-5%, 4%); }
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+        .heading { font-family: 'Syne', sans-serif; }
+
+        .glass {
+            background: rgba(10, 10, 12, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spotlight::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(59, 130, 246, 0.2), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        .spotlight:hover::before { opacity: 1; }
+
+        .text-gradient-blue {
+            background: linear-gradient(135deg, #fff 0%, #93c5fd 50%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: textShimmer 5s ease infinite;
+        }
+
+        @keyframes textShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .reveal {
+            opacity: 0; 
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform, opacity;
+        }
+        .reveal.active { 
+            opacity: 1; 
+            transform: translateY(0);
+        }
+
+        .luminous-btn-wrapper {
+          position: relative; display: inline-flex; overflow: hidden;
+          padding: 2.5px; border-radius: 9999px; z-index: 1;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .luminous-btn-wrapper:hover {
+          transform: scale(1.03);
+        }
+        .luminous-btn-wrapper::before {
+          content: ''; position: absolute; width: 300%; height: 300%;
+          background: conic-gradient(from 0deg, transparent 0%, var(--neon-blue) 10%, #fff 20%, var(--neon-blue) 30%, transparent 45%);
+          top: 50%; left: 50%; animation: rotate-border 3s linear infinite; z-index: -1;
+        }
+        @keyframes rotate-border {
+          0% { transform: translate(-50%, -50%) rotate(0deg); }
+          100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .luminous-btn-content {
+          position: relative; z-index: 2; background: #020617; color: #fff;
+          border-radius: 9999px; display: flex; align-items: center;
+          justify-content: center; width: 100%; height: 100%;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .luminous-btn-content:hover {
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .magnetic-target {
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+        .blur-in {
+            filter: blur(20px); opacity: 0;
+            animation: blurIn 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        @keyframes blurIn { to { filter: blur(0); opacity: 1; } }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "firebase/": "https://esm.sh/firebase@^12.8.0/",
+    "nodemailer": "https://esm.sh/nodemailer@^7.0.12",
+    "firebase-functions/": "https://esm.sh/firebase-functions@^7.0.3/",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.3"
+  }
+}
+</script>
+</head>
+<body class="grain">
+    <div class="perspective-grid"></div>
+    <div class="global-vignette"></div>
+    <div id="cursor-container">
+        <div id="cursor-main" class="cursor-dot main"></div>
+        <div id="cursor-ring" class="cursor-ring"></div>
+    </div>
+    
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+    <!-- Vite entry point -->
+    <script type="module" src="/index.tsx"></script>
+
+    <script>
+        const cursorContainer = document.getElementById('cursor-container');
+        const cursorMain = document.getElementById('cursor-main');
+        const cursorRing = document.getElementById('cursor-ring');
+        
+        const pointerQuery = window.matchMedia('(pointer: fine)');
+        let isFinePointer = pointerQuery.matches;
+
+        const trailsCount = 12;
+        const trails = [];
+        
+        for (let i = 0; i < trailsCount; i++) {
+            const trail = document.createElement('div');
+            trail.className = 'cursor-dot trail';
+            const size = 10 - (i * 0.7);
+            trail.style.width = `${Math.max(2, size)}px`;
+            trail.style.height = `${Math.max(2, size)}px`;
+            trail.style.opacity = (0.4 - (i * 0.03)).toString();
+            cursorContainer.appendChild(trail);
+            trails.push({
+                el: trail,
+                x: 0,
+                y: 0,
+                targetX: 0,
+                targetY: 0,
+                lerp: 0.2 - (i * 0.015)
+            });
+        }
+
+        let mouseX = 0;
+        let mouseY = 0;
+        let mainX = 0;
+        let mainY = 0;
+        let isHovering = false;
+
+        function updateCursorSystem() {
+            isFinePointer = pointerQuery.matches;
+            if (isFinePointer) {
+                document.body.style.cursor = 'none';
+                cursorContainer.style.display = 'block';
+            } else {
+                document.body.style.cursor = 'auto';
+                cursorContainer.style.display = 'none';
+            }
+        }
+
+        pointerQuery.addEventListener('change', updateCursorSystem);
+        updateCursorSystem();
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            const targets = document.querySelectorAll('.spotlight');
+            targets.forEach(target => {
+                const rect = target.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                target.style.setProperty('--mouse-x', `${x}px`);
+                target.style.setProperty('--mouse-y', `${y}px`);
+            });
+
+            const magnetics = document.querySelectorAll('.magnetic-target');
+            magnetics.forEach(m => {
+              const rect = m.getBoundingClientRect();
+              const mX = rect.left + rect.width / 2;
+              const mY = rect.top + rect.height / 2;
+              const dist = Math.sqrt(Math.pow(mouseX - mX, 2) + Math.pow(mouseY - mY, 2));
+              
+              const magneticRadius = 150;
+              if (dist < magneticRadius) {
+                const pullPower = (1 - dist / magneticRadius) * 0.45;
+                const pullX = (mouseX - mX) * pullPower;
+                const pullY = (mouseY - mY) * pullPower;
+                m.style.transform = `translate3d(${pullX}px, ${pullY}px, 0)`;
+              } else {
+                m.style.transform = `translate3d(0,0,0)`;
+              }
+            });
+        });
+
+        document.addEventListener('mouseover', (e) => {
+            if (!isFinePointer) return;
+            const target = e.target;
+            const isClickable = target.closest('button') || target.closest('a') || target.closest('.magnetic-target');
+            if (isClickable) {
+                isHovering = true;
+                cursorMain.classList.add('hover-state');
+                cursorRing.classList.add('active');
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (!isFinePointer) return;
+            const target = e.target;
+            const isClickable = target.closest('button') || target.closest('a') || target.closest('.magnetic-target');
+            if (isClickable) {
+                isHovering = false;
+                cursorMain.classList.remove('hover-state');
+                cursorRing.classList.remove('active');
+            }
+        });
+
+        function animateCursor() {
+            if (isFinePointer) {
+                mainX += (mouseX - mainX) * 0.2;
+                mainY += (mouseY - mainY) * 0.2;
+                
+                cursorMain.style.left = `${mainX}px`;
+                cursorMain.style.top = `${mainY}px`;
+                cursorRing.style.left = `${mainX}px`;
+                cursorRing.style.top = `${mainY}px`;
+
+                let prevX = mainX;
+                let prevY = mainY;
+
+                trails.forEach((trail, index) => {
+                    trail.x += (prevX - trail.x) * trail.lerp;
+                    trail.y += (prevY - trail.y) * trail.lerp;
+                    trail.el.style.left = `${trail.x}px`;
+                    trail.el.style.top = `${trail.y}px`;
+                    trail.el.style.opacity = isHovering ? '0' : (0.4 - (index * 0.03)).toString();
+                    prevX = trail.x;
+                    prevY = trail.y;
+                });
+            }
+            requestAnimationFrame(animateCursor);
+        }
+
+        animateCursor();
+    </script>
+</body>
 </html>

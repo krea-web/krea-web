@@ -1,0 +1,239 @@
+
+import React, { useRef, useState } from 'react';
+import { Check, Zap, Globe, Crown, ArrowRight, Star } from 'lucide-react';
+import { Language } from '../types';
+
+interface PricingProps {
+  lang: Language;
+  onNavigate: (id: string) => void;
+}
+
+export const Pricing: React.FC<PricingProps> = ({ lang, onNavigate }) => {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const titleRef = useRef<HTMLDivElement>(null);
+
+  const handleTitleMove = (e: React.MouseEvent) => {
+    if (!titleRef.current || window.innerWidth < 1024) return;
+    const rect = titleRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const rotateY = ((e.clientX - centerX) / (rect.width / 2)) * 8;
+    const rotateX = ((e.clientY - centerY) / (rect.height / 2)) * -8;
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const resetTilt = () => setTilt({ x: 0, y: 0 });
+
+  const t = {
+    it: {
+      badge: "INVESTIMENTO STRATEGICO",
+      title: "LE NOSTRE",
+      span: "TARIFFE",
+      desc: "Architetture scalabili progettate per dominare. Ogni piano è un concentrato di ingegneria digitale per la tua crescita.",
+      startingFrom: "INVESTIMENTO START",
+      ctaLabel: "AVVIA PROGETTO"
+    },
+    en: {
+      badge: "STRATEGIC INVESTMENT",
+      title: "OUR",
+      span: "PRICING",
+      desc: "Scalable architectures designed to dominate. Each plan is a concentrate of digital engineering for your growth.",
+      startingFrom: "STARTING INVESTMENT",
+      ctaLabel: "START PROJECT"
+    }
+  }[lang];
+
+  const plans = [
+    { 
+      id: 'CORE', 
+      name: 'KREA CORE', 
+      price: '599', 
+      icon: <Zap size={20} />, 
+      tag: 'ESSENTIAL POWER', 
+      specs: { throughput: '1.2 GB/s', latency: '0.4s', security: 'Standard' },
+      features: ['UI/UX d\'Eccellenza', 'SEO Fondamentale', 'Cloud Hosting Global', 'Performance Ready'], 
+      cta: lang === 'it' ? 'ATTIVA CORE' : 'ACTIVATE CORE', 
+      desc: 'La base d\'acciaio per brand che necessitano di velocità e impatto immediato.' 
+    },
+    { 
+      id: 'DOMINION', 
+      name: 'KREA DOMINION', 
+      price: '1499', 
+      icon: <Globe size={20} />, 
+      tag: 'STRATEGIC SCALE', 
+      featured: true, 
+      specs: { throughput: '4.8 GB/s', latency: '0.1s', security: 'Fortified' },
+      features: ['Multilingua Global', 'SEO Internazionale', 'Conversion Engine', 'Supporto Prioritario'], 
+      cta: lang === 'it' ? 'SCALA IL MERCATO' : 'SCALE THE MARKET', 
+      desc: 'Il gold standard per l\'espansione globale e la conversione massiva.' 
+    },
+    { 
+      id: 'PRESTIGE', 
+      name: 'KREA PRESTIGE', 
+      price: '2199', 
+      icon: <Crown size={20} />, 
+      tag: 'ELITE EXPERIENCE', 
+      specs: { throughput: 'UNLIMITED', latency: 'ULTRA', security: 'Quantum' },
+      features: ['Design Cinematico 3D', 'Moduli AI Custom', 'Scalabilità Infinita', 'Exclusive Brand Assets'], 
+      cta: lang === 'it' ? 'SBLOCCA PRESTIGIO' : 'UNLOCK PRESTIGE', 
+      desc: 'L\'apice dell\'ingegneria digitale per chi non accetta limiti alla visione.' 
+    }
+  ];
+
+  return (
+    <div className="py-16 md:py-32 laptop:py-48 relative overflow-hidden px-4 xs:px-6 bg-[#030303]" id="pricing">
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(37,99,235,0.03),transparent_70%)] pointer-events-none"></div>
+      
+      {/* HEADER TITOLO RICALIBRATO */}
+      <div className="flex flex-col items-center text-center w-full mb-16 md:mb-32 reveal">
+        <div 
+          ref={titleRef}
+          onMouseMove={handleTitleMove}
+          onMouseLeave={resetTilt}
+          className="max-w-7xl mx-auto px-4 perspective-2000"
+        >
+          <div className="inline-flex items-center gap-3 px-4 py-1.5 glass rounded-full border-blue-500/20 text-blue-400 text-[8px] md:text-[10px] font-black tracking-[0.5em] uppercase mb-8 shadow-xl">
+            <Star size={10} className="animate-spin-slow" />
+            {t.badge}
+          </div>
+          
+          <h2 
+            className="text-[12vw] sm:text-[10vw] md:text-[7rem] lg:text-[9rem] heading font-black leading-[0.8] tracking-[-0.05em] uppercase text-white transition-transform duration-700 ease-out select-none"
+            style={{ 
+              transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            <span className="block drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]" style={{ transform: 'translateZ(40px)' }}>{t.title}</span>
+            <span className="text-blue-600 block mt-1 drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]" style={{ transform: 'translateZ(80px)' }}>{t.span}</span>
+          </h2>
+          
+          <p className="mt-10 md:mt-16 text-gray-500 italic text-sm md:text-xl lg:text-2xl font-light leading-relaxed max-w-2xl mx-auto border-t border-white/5 pt-8 md:pt-12">
+            {t.desc}
+          </p>
+        </div>
+      </div>
+
+      {/* GRID DELLE CARD COMPATTATA */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto items-stretch px-2">
+        {plans.map((plan) => (
+          <PricingCard key={plan.id} plan={plan} t={t} onCtaClick={() => onNavigate('booking')} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const PricingCard: React.FC<{ plan: any; t: any; onCtaClick: () => void }> = ({ plan, t, onCtaClick }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [rotate, setRotate] = useState({ x: 0, y: 0 });
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current || window.innerWidth < 1024) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) / 30;
+    const y = (e.clientY - rect.top - rect.height / 2) / -30;
+    const lX = ((e.clientX - rect.left) / rect.width) * 100;
+    const lY = ((e.clientY - rect.top) / rect.height) * 100;
+    setRotate({ x: y, y: x });
+    setMousePos({ x: lX, y: lY });
+  };
+
+  const resetRotate = () => {
+    setRotate({ x: 0, y: 0 });
+    setIsHovered(false);
+  };
+
+  return (
+    <div 
+      ref={cardRef} 
+      onMouseMove={handleMouseMove} 
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={resetRotate} 
+      className={`relative rounded-[2.5rem] md:rounded-[3rem] p-[1px] transition-all duration-700 reveal flex flex-col group ${plan.featured ? 'z-20 lg:-mt-4 lg:-mb-4' : 'z-10'}`} 
+      style={{ 
+        perspective: '2000px',
+        background: isHovered 
+          ? `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(59,130,246,0.6), rgba(255,255,255,0.05) 60%)`
+          : 'rgba(255,255,255,0.08)'
+      }}
+    >
+      <div 
+        className={`relative h-full glass rounded-[2.45rem] md:rounded-[2.95rem] p-8 md:p-10 flex flex-col overflow-hidden transition-all duration-700 bg-black/95 ${plan.featured ? 'shadow-[0_40px_80px_rgba(59,130,246,0.12)]' : 'shadow-xl'}`} 
+        style={{ 
+          transform: `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`, 
+          transformStyle: 'preserve-3d' 
+        }}
+      >
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          style={{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(59,130,246,0.08), transparent 60%)` }}
+        ></div>
+
+        {/* HEADER */}
+        <div className="mb-8 relative z-20" style={{ transform: 'translateZ(30px)' }}>
+            <div className="flex justify-between items-start mb-6">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-700 ${plan.featured ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)]' : 'bg-white/5 text-blue-500 border border-white/10'}`}>
+                    {plan.icon}
+                </div>
+                <div className="text-right">
+                    <span className="text-[8px] font-black text-blue-500 tracking-[0.3em] uppercase block mb-0.5">{plan.tag}</span>
+                    <h4 className="text-lg md:text-xl font-black heading tracking-tight text-white">{plan.name}</h4>
+                </div>
+            </div>
+            
+            <div className="mb-8">
+                <span className="text-[8px] font-black text-gray-600 tracking-[0.3em] uppercase block mb-1">{t.startingFrom}</span>
+                <div className="flex items-baseline gap-1.5">
+                    <span className="text-lg font-black heading text-blue-400">€</span>
+                    <span className="text-4xl md:text-5xl font-black heading text-white transition-all duration-500 group-hover:text-blue-500">
+                      {plan.price}
+                    </span>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 py-4 border-y border-white/5 mb-6 bg-white/[0.02] rounded-xl px-3">
+               {Object.entries(plan.specs).map(([key, val]: [string, any]) => (
+                 <div key={key} className="text-center">
+                   <span className="text-[6px] font-mono text-gray-600 block uppercase mb-0.5">{key}</span>
+                   <span className="text-[7px] font-black text-white tracking-widest uppercase">{val}</span>
+                 </div>
+               ))}
+            </div>
+            
+            <p className="text-xs md:text-sm text-gray-500 italic leading-relaxed border-l border-blue-600/30 pl-4">
+                {plan.desc}
+            </p>
+        </div>
+
+        {/* FEATURES */}
+        <div className="flex-1 space-y-3 mb-10 relative z-20" style={{ transform: 'translateZ(15px)' }}>
+            {plan.features.map((feat: string, j: number) => (
+                <div key={j} className="flex items-center gap-3 group/item">
+                    <div className="w-4 h-4 rounded-full bg-blue-600/10 flex items-center justify-center border border-blue-500/20 group-hover/item:bg-blue-600 transition-all">
+                      <Check size={10} className="text-blue-500 group-hover/item:text-white" />
+                    </div>
+                    <span className="text-[11px] md:text-xs text-gray-400 font-medium group-hover/item:text-white transition-colors">
+                      {feat}
+                    </span>
+                </div>
+            ))}
+        </div>
+
+        {/* CTA */}
+        <div className="relative z-30" style={{ transform: 'translateZ(40px)' }}>
+          <button 
+            onClick={onCtaClick} 
+            className={`w-full py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2.5 transition-all duration-500 overflow-hidden relative group/btn ${plan.featured ? 'bg-white text-black hover:bg-blue-600 hover:text-white' : 'bg-transparent text-white border border-white/10 hover:border-blue-500/50 hover:bg-white/5'}`}
+          >
+              <span className="relative z-10">{plan.cta}</span>
+              <ArrowRight size={12} className="relative z-10 group-hover/btn:translate-x-1.5 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_2s_infinite] pointer-events-none"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
