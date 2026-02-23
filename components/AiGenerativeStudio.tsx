@@ -20,7 +20,7 @@ export const AiGenerativeStudio: React.FC<AiGenerativeStudioProps> = ({ lang }) 
     it: {
       title: "KREA SYNTHESIS STUDIO",
       subtitle: "Generative Excellence",
-      desc: "Accedi ai modelli più avanzati al mondo per creare asset multimediali d'élite.",
+      desc: "Accedi ai modelli più avanzati al mondo per kreare asset multimediali d'élite.",
       placeholder: "Descrivi il capolavoro architettonico...",
       btnImg: "Genera 4K Image",
       btnVid: "Genera Cinema Video",
@@ -31,7 +31,7 @@ export const AiGenerativeStudio: React.FC<AiGenerativeStudioProps> = ({ lang }) 
       modeImg: "Image Architect",
       modeVid: "Motion Architect",
       videoMessages: [
-        "Inizializzazione flussi creativi...",
+        "Inizializzazione flussi kreativi...",
         "Elaborazione architettura temporale...",
         "Rendering fotogrammi d'élite...",
         "Sintesi sequenziale in corso...",
@@ -41,7 +41,7 @@ export const AiGenerativeStudio: React.FC<AiGenerativeStudioProps> = ({ lang }) 
     en: {
       title: "KREA SYNTHESIS STUDIO",
       subtitle: "Generative Excellence",
-      desc: "Access the world's most advanced models to create elite multimedia assets.",
+      desc: "Access the world's most advanced models to kreate elite multimedia assets.",
       placeholder: "Describe the architectural masterpiece...",
       btnImg: "Generate 4K Image",
       btnVid: "Generate Cinema Video",
@@ -52,7 +52,7 @@ export const AiGenerativeStudio: React.FC<AiGenerativeStudioProps> = ({ lang }) 
       modeImg: "Image Architect",
       modeVid: "Motion Architect",
       videoMessages: [
-        "Initializing creative flows...",
+        "Initializing kreative flows...",
         "Processing temporal architecture...",
         "Rendering elite frames...",
         "Sequential synthesis in progress...",

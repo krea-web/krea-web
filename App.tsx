@@ -24,7 +24,7 @@ import { Language, Page } from './types';
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [displayPage, setDisplayPage] = useState<Page>('home');
-  const [lang, setLang] = useState<Language>(() => {
+  const lang: Language = 'it'; // Lingua unica forzata
     if (typeof window !== 'undefined' && navigator.language) {
       return navigator.language.startsWith('it') ? 'it' : 'en';
     }
