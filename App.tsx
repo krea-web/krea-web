@@ -24,12 +24,10 @@ import { Language, Page } from './types';
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [displayPage, setDisplayPage] = useState<Page>('home');
-  const lang: Language = 'it'; // Lingua unica forzata
-    if (typeof window !== 'undefined' && navigator.language) {
-      return navigator.language.startsWith('it') ? 'it' : 'en';
-    }
-    return 'en';
-  });
+  
+  // Lingua bloccata su Italiano
+  const lang: Language = 'it';
+  
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [statusMsg, setStatusMsg] = useState('INITIALIZING_CORE');
