@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Testimonials } from './components/Testimonials';
@@ -21,17 +22,29 @@ import { DominionTeaser } from './components/DominionTeaser';
 import { SectionDivider } from './components/SectionDivider';
 import { Language, Page } from './types';
 
-const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [displayPage, setDisplayPage] = useState<Page>('home');
-  
-  // Lingua fissa e bloccata
+const pageToPath = (page: Page): string => {
+  if (page === 'about') return '/chisiamo';
+  if (page === 'pricing') return '/tariffe';
+  return '/';
+};
+
+const pathToPage = (path: string): Page => {
+  if (path === '/chisiamo') return 'about';
+  if (path === '/tariffe') return 'pricing';
+  return 'home';
+};
+
+const AppShell: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const lang: Language = 'it';
   
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [statusMsg, setStatusMsg] = useState('INITIALIZING_CORE');
   const [transitionState, setTransitionState] = useState<'idle' | 'exiting' | 'entering'>('idle');
+  const [displayLocation, setDisplayLocation] = useState(location);
 
   const statusLogs = [
     'ESTABLISHING_SECURE_UPLINK',
@@ -72,10 +85,25 @@ const App: React.FC = () => {
     }
   }, [loadingProgress]);
 
+  useEffect(() => {
+    if (location.pathname === displayLocation.pathname) return;
+    setTransitionState('exiting');
+    const exitTimeout = setTimeout(() => {
+      setDisplayLocation(location);
+      setTransitionState('entering');
+      const idleTimeout = setTimeout(() => setTransitionState('idle'), 600);
+      return () => clearTimeout(idleTimeout);
+    }, 500);
+    return () => clearTimeout(exitTimeout);
+  }, [location, displayLocation]);
+
   const handlePageChange = useCallback((newPage: Page, targetId?: string) => {
-    if (newPage === currentPage && !targetId) return;
-    
-    if (newPage === currentPage && targetId) {
+    const path = pageToPath(newPage);
+    const currentPath = location.pathname;
+
+    if (path === currentPath && !targetId) return;
+
+    if (path === currentPath && targetId) {
       const el = document.getElementById(targetId);
       if (el) {
         const offset = 100;
@@ -85,28 +113,9 @@ const App: React.FC = () => {
       return;
     }
 
-    setTransitionState('exiting');
-    
-    setTimeout(() => {
-      setCurrentPage(newPage);
-      setDisplayPage(newPage);
-      
-      if (targetId) {
-        setTimeout(() => {
-          const el = document.getElementById(targetId);
-          if (el) {
-            const offset = 100;
-            const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
-            window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
-          }
-        }, 100);
-      } else {
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      }
-      setTransitionState('entering');
-      setTimeout(() => setTransitionState('idle'), 600);
-    }, 500);
-  }, [currentPage]);
+    const fullPath = targetId ? `${path}#${targetId}` : path;
+    navigate(fullPath);
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -118,7 +127,25 @@ const App: React.FC = () => {
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  }, [displayPage, isLoading, transitionState]);
+  }, [displayLocation.pathname, isLoading, transitionState]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    const hash = displayLocation.hash;
+    if (!hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+    const targetId = hash.replace('#', '');
+    setTimeout(() => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        const offset = 100;
+        const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
+      }
+    }, 100);
+  }, [displayLocation, isLoading]);
 
   if (isLoading) {
     return (
@@ -161,6 +188,8 @@ const App: React.FC = () => {
     );
   }
 
+  const activeSection: Page = pathToPage(location.pathname);
+
   return (
     <div className="min-h-screen bg-[#020617] text-white selection:bg-blue-600/40 relative overflow-x-hidden">
       <BackgroundWaterfall />
@@ -170,9 +199,8 @@ const App: React.FC = () => {
       
       <div className="relative z-10 flex flex-col">
         <Navbar 
-          activeSection={currentPage} 
-          lang={lang} 
-          setCurrentPage={handlePageChange}
+          activeSection={activeSection} 
+          lang={lang}
         />
         
         <main className={`flex-1 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
@@ -180,54 +208,63 @@ const App: React.FC = () => {
           transitionState === 'entering' ? 'opacity-0 scale-105 blur-2xl translate-y-4' : 
           'opacity-100 scale-100 blur-0 translate-y-0'
         }`}>
-          {displayPage === 'home' && (
-            <div className="bg-transparent">
-              <section id="home" className="relative">
-                <Hero lang={lang} onNavigate={(id) => handlePageChange('home', id)} />
-                <SectionDivider />
-                <div className="reveal"><ServicePillars lang={lang} /></div>
-                <SectionDivider />
-                <div id="ai-engine" className="reveal"><AiEngine lang={lang} /></div>
-                <SectionDivider />
-                <div className="reveal"><DoubleMediaMarquee /></div>
-              </section>
-              
-              <SectionDivider />
-              <div className="reveal">
-                <DominionTeaser 
-                  lang={lang} 
-                  onNavigate={() => handlePageChange('pricing')} 
-                />
-              </div>
+          <Routes location={displayLocation}>
+            <Route
+              path="/"
+              element={
+                <div className="bg-transparent">
+                  <section id="home" className="relative">
+                    <Hero lang={lang} onNavigate={(id) => handlePageChange('home', id)} />
+                    <SectionDivider />
+                    <div className="reveal"><ServicePillars lang={lang} /></div>
+                    <SectionDivider />
+                    <div id="ai-engine" className="reveal"><AiEngine lang={lang} /></div>
+                    <SectionDivider />
+                    <div className="reveal"><DoubleMediaMarquee /></div>
+                  </section>
+                  
+                  <SectionDivider />
+                  <div className="reveal">
+                    <DominionTeaser 
+                      lang={lang} 
+                      onNavigate={() => handlePageChange('pricing')} 
+                    />
+                  </div>
 
-              <SectionDivider />
-              <div className="reveal"><DigitalRestoration lang={lang} onNavigate={(id) => handlePageChange('home', id)} /></div>
-              <SectionDivider />
-              <div id="booking" className="reveal"><Booking lang={lang} /></div>
-            </div>
-          )}
-
-          {displayPage === 'about' && (
-            <div className="bg-transparent">
-              <About lang={lang} onNavigate={(id) => handlePageChange('home', id)} />
-              <SectionDivider />
-              <div id="instagram" className="reveal"><InstagramShowcase lang={lang} /></div>
-              <SectionDivider />
-              <div className="reveal"><Testimonials lang={lang} /></div>
-            </div>
-          )}
-
-          {displayPage === 'pricing' && (
-            <div className="bg-transparent">
-              <Pricing lang={lang} onNavigate={(id) => handlePageChange('pricing', id)} />
-              <SectionDivider />
-              <div className="reveal"><Booking lang={lang} /></div>
-            </div>
-          )}
+                  <SectionDivider />
+                  <div className="reveal"><DigitalRestoration lang={lang} onNavigate={(id) => handlePageChange('home', id)} /></div>
+                  <SectionDivider />
+                  <div id="booking" className="reveal"><Booking lang={lang} /></div>
+                </div>
+              }
+            />
+            <Route
+              path="/chisiamo"
+              element={
+                <div className="bg-transparent">
+                  <About lang={lang} onNavigate={(id) => handlePageChange('home', id)} />
+                  <SectionDivider />
+                  <div id="instagram" className="reveal"><InstagramShowcase lang={lang} /></div>
+                  <SectionDivider />
+                  <div className="reveal"><Testimonials lang={lang} /></div>
+                </div>
+              }
+            />
+            <Route
+              path="/tariffe"
+              element={
+                <div className="bg-transparent">
+                  <Pricing lang={lang} onNavigate={(id) => handlePageChange('pricing', id)} />
+                  <SectionDivider />
+                  <div className="reveal"><Booking lang={lang} /></div>
+                </div>
+              }
+            />
+          </Routes>
         </main>
 
         <TechMarquee />
-        <Footer lang={lang} setCurrentPage={(page) => handlePageChange(page)} />
+        <Footer lang={lang} />
       </div>
 
       <div className={`fixed inset-0 z-[150] pointer-events-none transition-all duration-500 bg-blue-600/5 backdrop-blur-sm ${transitionState !== 'idle' ? 'opacity-100' : 'opacity-0'}`}>
@@ -235,6 +272,14 @@ const App: React.FC = () => {
          <div className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500/50 shadow-[0_0_20px_#3b82f6]"></div>
       </div>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <AppShell />
+    </BrowserRouter>
   );
 };
 

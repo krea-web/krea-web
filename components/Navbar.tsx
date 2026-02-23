@@ -1,20 +1,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, Instagram, ChevronRight, Globe, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Language, Page } from '../types';
 
 interface NavbarProps {
   activeSection: string;
   lang: Language;
-  setCurrentPage: (page: Page, targetId?: string) => void;
   setLang?: (lang: Language) => void;
 }
 
-  export const Navbar: React.FC<NavbarProps> = ({ activeSection, lang, setCurrentPage }) => {
+  export const Navbar: React.FC<NavbarProps> = ({ activeSection, lang }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const navRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -35,7 +36,12 @@ interface NavbarProps {
   const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
   const navigateTo = (page: Page, targetId?: string) => {
-    setCurrentPage(page, targetId);
+    const path =
+      page === 'about' ? '/chisiamo' :
+      page === 'pricing' ? '/tariffe' :
+      '/';
+    const fullPath = targetId ? `${path}#${targetId}` : path;
+    navigate(fullPath);
     setIsMobileMenuOpen(false);
   };
 

@@ -1,15 +1,15 @@
 
 import React from 'react';
-// Changed import from '../App' to '../types'
+import { useNavigate } from 'react-router-dom';
 import { Language, Page } from '../types';
 import { Instagram, ArrowUpRight, MapPin, Mail, Globe, Activity, ShieldCheck, Wifi } from 'lucide-react';
 
 interface FooterProps {
   lang: Language;
-  setCurrentPage: (page: Page) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ lang, setCurrentPage }) => {
+export const Footer: React.FC<FooterProps> = ({ lang }) => {
+  const navigate = useNavigate();
   const t = {
     it: {
       desc: "Global Digital Agency. Ingegneria neurale e design d'élite per il dominio dei mercati internazionali.",
@@ -58,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({ lang, setCurrentPage }) => {
             <div className="lg:col-span-5 flex flex-col gap-8">
                 <div 
                     className="flex items-center gap-4 group cursor-pointer w-fit" 
-                    onClick={() => setCurrentPage('home')}
+                    onClick={() => navigate('/')}
                 >
                     <div className="relative w-12 h-12 flex items-center justify-center">
                         <div className="absolute inset-0 bg-blue-600 rounded-xl rotate-6 group-hover:rotate-12 transition-transform duration-500 shadow-[0_0_20px_rgba(37,99,235,0.4)]"></div>
@@ -100,13 +100,19 @@ export const Footer: React.FC<FooterProps> = ({ lang, setCurrentPage }) => {
                         </h5>
                         <ul className="space-y-4">
                             {[
-                                { label: 'HOME', page: 'home' },
-                                { label: 'CHI SIAMO', page: 'about' },
-                                { label: 'TARIFFE', page: 'pricing' }
+                                { label: 'HOME', page: 'home' as Page },
+                                { label: 'CHI SIAMO', page: 'about' as Page },
+                                { label: 'TARIFFE', page: 'pricing' as Page }
                             ].map((link, i) => (
                                 <li key={i}>
                                     <button 
-                                        onClick={() => setCurrentPage(link.page as Page)} 
+                                        onClick={() => {
+                                          const path =
+                                            link.page === 'about' ? '/chisiamo' :
+                                            link.page === 'pricing' ? '/tariffe' :
+                                            '/';
+                                          navigate(path);
+                                        }} 
                                         className="text-[11px] font-bold text-gray-400 hover:text-white hover:translate-x-2 transition-all duration-300 uppercase tracking-widest flex items-center gap-2 group"
                                     >
                                         <span className="w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
