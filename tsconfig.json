@@ -27,7 +27,4 @@
     "vite.config.ts",
     "functions"
   ],
-  "references": [
-    { "path": "./tsconfig.node.json" }
-  ]
 }
