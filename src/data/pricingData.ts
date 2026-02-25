@@ -59,7 +59,7 @@ export const getPricingPlans = (lang: Language): PricingPlanView[] => {
       name: 'KREA AUTONOMY',
       icon: 'crown',
       tag: 'ENTERPRISE',
-      setupFee: 'Da € 2.499 a € 9.999',
+      setupFee: '€ 2.499 a € 9.999',
       monthlyFee: '€ 199 – € 499 /mese',
       features: [
         'Tutto ciò che è in System',
