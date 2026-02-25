@@ -77,7 +77,7 @@ export const getPricingPlans = (lang: Language): PricingPlanView[] => {
       name: 'INTERVENTI SPOT',
       icon: 'wrench',
       tag: 'ON DEMAND',
-      setupFee: '€ 200 – € 500 – € 1.000',
+      setupFee: '200 – 500 – 1.000',
       features: [
         'Valido per siti senza abbonamento mensile attivo',
         'Lavori su siti già esistenti (non sviluppati con stack KREA)',
