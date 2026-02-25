@@ -1,25 +1,18 @@
 import type { Language } from '../../types';
 
-export type PricingPlanId = 'CORE' | 'DOMINION' | 'PRESTIGE';
+export type PricingPlanId = 'CORE' | 'SYSTEM' | 'AUTONOMY' | 'SPOT';
 
 export interface PricingPlanData {
   id: PricingPlanId;
   name: string;
-  price: string;
-  icon: 'zap' | 'globe' | 'crown';
+  icon: 'zap' | 'globe' | 'crown' | 'wrench';
   tag: string;
-  specs: {
-    throughput: string;
-    latency: string;
-    security: string;
-  };
+  setupFee: string;
+  monthlyFee?: string;
   features: string[];
   desc: string;
   featured?: boolean;
-  cta: {
-    it: string;
-    en: string;
-  };
+  cta: { it: string; en: string };
 }
 
 export interface PricingPlanView extends Omit<PricingPlanData, 'cta'> {
@@ -31,74 +24,80 @@ export const getPricingPlans = (lang: Language): PricingPlanView[] => {
     {
       id: 'CORE',
       name: 'KREA CORE',
-      price: '599',
       icon: 'zap',
       tag: 'ESSENTIAL POWER',
-      specs: { throughput: '1.2 GB/s', latency: '0.4s', security: 'Standard' },
+      setupFee: '€ 999',
+      monthlyFee: '€ 69 – € 99 /mese',
       features: [
-        "UI/UX d'Eccellenza",
-        'SEO Fondamentale',
-        'Cloud Hosting Global',
-        'Performance Ready'
+        'Frontend ultra-veloce (React)',
+        'Database Supabase (raccolta lead)',
+        '1/2/3 Workflow base (Notifica Telegram, Scanner, Calendario...)',
+        'Hosting incluso',
       ],
-      cta: {
-        it: 'ATTIVA CORE',
-        en: 'ACTIVATE CORE'
-      },
-      desc: "La base d'acciaio per brand che necessitano di velocità e impatto immediato."
+      desc: 'La base operativa ultra-veloce per catturare lead.',
+      cta: { it: 'ATTIVA CORE', en: 'ACTIVATE CORE' },
     },
     {
-      id: 'DOMINION',
-      name: 'KREA DOMINION',
-      price: '1499',
+      id: 'SYSTEM',
+      name: 'KREA SYSTEM',
       icon: 'globe',
-      tag: 'STRATEGIC SCALE',
+      tag: 'FULL SYSTEM',
       featured: true,
-      specs: { throughput: '4.8 GB/s', latency: '0.1s', security: 'Fortified' },
+      setupFee: '€ 1.799',
+      monthlyFee: '€ 99 – € 149 /mese',
       features: [
-        'Multilingua Global',
-        'SEO Internazionale',
-        'Conversion Engine',
-        'Supporto Prioritario'
+        'Tutto ciò che è in Core',
+        'E-Commerce con Compliance Fiscale Globale (MoR via Lemon Squeezy)',
+        'Monitoraggio proattivo "Morning Brief"',
+        'Supporto Prioritario',
       ],
-      cta: {
-        it: 'SCALA IL MERCATO',
-        en: 'SCALE THE MARKET'
-      },
-      desc: "Il gold standard per l'espansione globale e la conversione massiva."
+      desc: 'Il sistema completo per vendere a livello globale in automatico.',
+      cta: { it: 'SCALA IL MERCATO', en: 'SCALE THE MARKET' },
     },
     {
-      id: 'PRESTIGE',
-      name: 'KREA PRESTIGE',
-      price: '2199',
+      id: 'AUTONOMY',
+      name: 'KREA AUTONOMY',
       icon: 'crown',
-      tag: 'ELITE EXPERIENCE',
-      specs: { throughput: 'UNLIMITED', latency: 'ULTRA', security: 'Quantum' },
+      tag: 'ENTERPRISE',
+      setupFee: 'Da € 2.499 a € 9.999',
+      monthlyFee: '€ 199 – € 499 /mese',
       features: [
-        'Design Cinematico 3D',
-        'Moduli AI Custom',
-        'Scalabilità Infinita',
-        'Exclusive Brand Assets'
+        'Tutto ciò che è in System',
+        'Supporto Prioritario 24/7',
+        'Infrastruttura W.A.T. completa',
+        'Agenti Illimitati',
+        'Database Replicato Multi-Region (latenza zero)',
+        'SLA Garantito 99.99%',
       ],
-      cta: {
-        it: 'SBLOCCA PRESTIGIO',
-        en: 'UNLOCK PRESTIGE'
-      },
-      desc: "L'apice dell'ingegneria digitale per chi non accetta limiti alla visione."
-    }
+      desc: 'Il livello Enterprise per volumi di traffico estremi e automazione totale.',
+      cta: { it: 'SBLOCCA AUTONOMY', en: 'UNLOCK AUTONOMY' },
+    },
+    {
+      id: 'SPOT',
+      name: 'INTERVENTI SPOT',
+      icon: 'wrench',
+      tag: 'ON DEMAND',
+      setupFee: '€ 200 – € 500 – € 1.000',
+      features: [
+        'Valido per siti senza abbonamento mensile attivo',
+        'Lavori su siti già esistenti (non sviluppati con stack KREA)',
+        'Prezzo a prestazione',
+      ],
+      desc: 'Soluzioni per progetti legacy o senza retainer.',
+      cta: { it: 'RICHIEDI INTERVENTO', en: 'REQUEST SERVICE' },
+    },
   ];
 
   return basePlans.map((plan) => ({
     id: plan.id,
     name: plan.name,
-    price: plan.price,
     icon: plan.icon,
     tag: plan.tag,
-    specs: plan.specs,
+    setupFee: plan.setupFee,
+    monthlyFee: plan.monthlyFee,
     features: plan.features,
     desc: plan.desc,
     featured: plan.featured,
-    ctaLabel: lang === 'it' ? plan.cta.it : plan.cta.en
+    ctaLabel: lang === 'it' ? plan.cta.it : plan.cta.en,
   }));
 };
-
